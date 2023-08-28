@@ -7,7 +7,7 @@ void Game::initVariables()
     // Game logic init
     this->points = 0;
     // timer could depend on framerate
-    this->enemySpawnTimerMax = 1000.f;
+    this->enemySpawnTimerMax = 10.f;
     this->enemySpawnTimer = this->enemySpawnTimerMax;
     this->maxEnemies = 5;
 }
@@ -26,8 +26,8 @@ void Game::initEnemies()
     this->enemy.setSize(sf::Vector2f(100.f, 100.f));
     this->enemy.setScale(sf::Vector2f(0.5f, 0.5f));
     this->enemy.setFillColor(sf::Color::Cyan);
-    this->enemy.setOutlineColor(sf::Color::Green);
-    this->enemy.setOutlineThickness(1.f);
+    // this->enemy.setOutlineColor(sf::Color::Green);
+    // this->enemy.setOutlineThickness(1.f);
 
 
 }
@@ -61,15 +61,19 @@ void Game::spawnEnemy()
         - Set a random color
         - Adds enemy to vector
     */
-   this->enemy.setPosition(
+    this->enemy.setPosition(
         // random x pos, y starts at 0 (top of screen)
         static_cast<float>(rand() % static_cast<int>(this->window->getSize().x - this->enemy.getSize().x)),
         0.f
-   );
+    );
 
-   this->enemy.setFillColor(sf::Color::Green);
+    this->enemy.setFillColor(sf::Color::Green);
 
-   this->enemies.push_back(this->enemy);
+    // Add enemy to enemies vector
+    this->enemies.push_back(this->enemy);
+
+    // Remove enemies at end of screen
+    
 }
 void Game::updateEnemies()
 {
@@ -94,9 +98,25 @@ void Game::updateEnemies()
             this->enemySpawnTimer += 1.f;
     }
     // Move the enemies
-    for(auto &e : this->enemies)
+    for(size_t i = 0; i < this->enemies.size(); i++)
     {
-        e.move(0.f, 1.f);
+        this->enemies[i].move(0.f, 5.f);
+
+        // delete if clicked upon
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+            if (this->enemies[i].getGlobalBounds().contains(this->mousePosView)) {
+                this->enemies.erase(this->enemies.begin() + i);
+                i -= 1;
+                // Gain points for killing rect enemies
+                this->points += 10.f;
+            }
+        // delete if gone below screen
+        } else if (this->enemies[i].getPosition().y > this->window->getSize().y)
+        {
+            this->enemies.erase(this->enemies.begin() + i);
+        }
+        // an important thing to note is that best practice would have removal called once to be safe.
+        // a bool can be added to check if the current instance of the loop has already removed an item
     }
 }
 void Game::renderEnemies()
@@ -132,6 +152,7 @@ void Game::updateMousePositions()
     Updates mouse position relative to the window (Vector2i)
     */
    this->mousePosWindow = sf::Mouse::getPosition(*this->window);
+   this->mousePosView = this->window->mapPixelToCoords(this->mousePosWindow);
 }
 
 void Game::update()
