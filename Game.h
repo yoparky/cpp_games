@@ -36,10 +36,13 @@ private:
     sf::RectangleShape enemy;
     
     // Game logic
-    int points;
+    bool endGame;
+    unsigned points;
     float enemySpawnTimer;
     float enemySpawnTimerMax;
     int maxEnemies;
+    bool mouseHeld;
+    int health;
 
 public:
     // Constructors and Destructors
@@ -48,6 +51,7 @@ public:
 
     // Accessors
     const bool running() const;
+    const bool getEndGame() const;
 
     // Functions
     void spawnEnemy();

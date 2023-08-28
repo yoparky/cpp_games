@@ -10,6 +10,9 @@ void Game::initVariables()
     this->enemySpawnTimerMax = 10.f;
     this->enemySpawnTimer = this->enemySpawnTimerMax;
     this->maxEnemies = 5;
+    this->mouseHeld = false;
+    this->health = 10;
+    this->endGame = false;
 }
 void Game::initWindow()
 {
@@ -48,6 +51,10 @@ Game::~Game()
 const bool Game::running() const
 {
     return this->window->isOpen();
+}
+const bool Game::getEndGame() const
+{
+    return this->endGame;
 }
 
 // Public functions
@@ -97,26 +104,43 @@ void Game::updateEnemies()
         else
             this->enemySpawnTimer += 1.f;
     }
-    // Move the enemies
-    for(size_t i = 0; i < this->enemies.size(); i++)
+    // Moving and updating enemies
+    for (int i = 0; i < this->enemies.size(); i++)
     {
+        bool deleted = false;
+
         this->enemies[i].move(0.f, 5.f);
 
-        // delete if clicked upon
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-            if (this->enemies[i].getGlobalBounds().contains(this->mousePosView)) {
-                this->enemies.erase(this->enemies.begin() + i);
-                i -= 1;
-                // Gain points for killing rect enemies
-                this->points += 10.f;
-            }
-        // delete if gone below screen
-        } else if (this->enemies[i].getPosition().y > this->window->getSize().y)
+        if (this->enemies[i].getPosition().y > this->window->getSize().y) 
         {
             this->enemies.erase(this->enemies.begin() + i);
+            this->health -= 1;
+            --i;
         }
-        // an important thing to note is that best practice would have removal called once to be safe.
-        // a bool can be added to check if the current instance of the loop has already removed an item
+    }
+
+    // check if clicked
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+    {
+        if (this->mouseHeld == false)
+        {
+            this->mouseHeld = true;
+            bool deleted = false;
+            for (size_t i = 0; i < this->enemies.size() && deleted == false; i++)
+            {
+                if (this->enemies[i].getGlobalBounds().contains(this->mousePosView))
+                {
+                    // Delete the enemy
+                    deleted = true;
+                    this->enemies.erase(this->enemies.begin() + i);
+
+                    // Gain points
+                    this->points += 1;
+                }
+            }
+        }
+    } else {
+        this->mouseHeld = false;
     }
 }
 void Game::renderEnemies()
@@ -158,10 +182,13 @@ void Game::updateMousePositions()
 void Game::update()
 {
     this->pollEvents();
-
-    this->updateMousePositions();
-
-    this->updateEnemies();
+    if (!this->endGame) 
+    {
+        this->updateMousePositions();
+        this->updateEnemies();
+    }
+    if(this-> health <= 0)
+        this->endGame = true;
 
 }
 
