@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 // precompile headers
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
@@ -21,6 +23,9 @@ private:
     // Private functions
     void initVariables();
     void initWindow();
+    void initEnemies();
+    // Game objects
+    sf::RectangleShape enemy;
 
 public:
     // Constructors and Destructors
