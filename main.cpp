@@ -2,7 +2,9 @@
 #include "Game.h"
 
 int main()
-{
+{   
+    // seed srand
+    std::srand(static_cast<unsigned>(time(nullptr)));
     // Init game engine
     Game game;
 
