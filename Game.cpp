@@ -32,13 +32,28 @@ void Game::initEnemies()
     // this->enemy.setOutlineColor(sf::Color::Green);
     // this->enemy.setOutlineThickness(1.f);
 
+}
 
+void Game::initFonts()
+{
+    if(this->font.loadFromFile("./fonts/Roboto-Bold.ttf")){
+        std::cout << "Error: GAME::initFonts - Load font error" << "\n";
+    }
+}
+void Game:: initText()
+{
+    this->uiText.setFont(this->font);
+    this->uiText.setCharacterSize(12);
+    this->uiText.setFillColor(sf::Color::White);
+    this->uiText.setString("NONE");
 }
 // Constructors and destructors
 Game::Game()
 {
     this->initVariables();
     this->initWindow();
+    this->initFonts();
+    this->initText();
     this->initEnemies();
 }
 
@@ -143,11 +158,11 @@ void Game::updateEnemies()
         this->mouseHeld = false;
     }
 }
-void Game::renderEnemies()
+void Game::renderEnemies(sf::RenderTarget& target)
 {
     for(auto &e : this->enemies)
     {
-        this->window->draw(e);
+        target.draw(e);
     }
 }
 void Game::pollEvents()
@@ -185,6 +200,7 @@ void Game::update()
     if (!this->endGame) 
     {
         this->updateMousePositions();
+        this->updateText();
         this->updateEnemies();
     }
     if(this-> health <= 0)
@@ -207,7 +223,20 @@ void Game::render()
     this->window->clear();
 
     // Draw game objects
-    this->renderEnemies();
+    this->renderEnemies(*this->window);
+    this->renderText(*this->window);
 
     this->window->display();
+}
+
+void Game::renderText(sf::RenderTarget& target)
+{
+    target.draw(this->uiText);
+}
+void Game::updateText()
+{
+    std::stringstream ss;
+    ss << "Points: " << this->points;
+    ss << "\n" << "Health: " << this->health;
+    this->uiText.setString(ss.str());
 }
