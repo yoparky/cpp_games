@@ -36,7 +36,7 @@ void Game::initEnemies()
 
 void Game::initFonts()
 {
-    if(this->font.loadFromFile("./fonts/Roboto-Bold.ttf")){
+    if(this->font.loadFromFile("./fonts/Roboto-Regular.ttf")){
         std::cout << "Error: GAME::initFonts - Load font error" << "\n";
     }
 }
@@ -78,7 +78,8 @@ void Game::spawnEnemy()
     /*
         @return void
 
-        spawns enemies and sets their colors and positions.
+        spawns enemies at random x pos and sets their colors and positions.
+        - Set a random type (distinguishable by color and size)
         - Set a random position
         - Set a random color
         - Adds enemy to vector
@@ -89,12 +90,39 @@ void Game::spawnEnemy()
         0.f
     );
 
-    this->enemy.setFillColor(sf::Color::Green);
+    // Randomize enemy type
+    int type = rand() % 5;
+    switch(type)
+    {
+    case 0:
+        this->enemy.setSize(sf::Vector2f(10.f, 10.f));
+        this->enemy.setFillColor(sf::Color::Magenta);
+        break;
+    case 1:
+        this->enemy.setSize(sf::Vector2f(30.f, 30.f));
+        this->enemy.setFillColor(sf::Color::Blue);
+        break;
+    case 2:
+        this->enemy.setSize(sf::Vector2f(50.f, 50.f));
+        this->enemy.setFillColor(sf::Color::Cyan);
+        break;
+    case 3:
+        this->enemy.setSize(sf::Vector2f(70.f, 70.f));
+        this->enemy.setFillColor(sf::Color::Red);
+        break;
+    case 4:
+        this->enemy.setSize(sf::Vector2f(100.f, 100.f));
+        this->enemy.setFillColor(sf::Color::Green);
+        break;
+    default:
+        this->enemy.setSize(sf::Vector2f(100.f, 100.f));
+        this->enemy.setFillColor(sf::Color::Green);
+        break;
+    }
 
     // Add enemy to enemies vector
     this->enemies.push_back(this->enemy);
 
-    // Remove enemies at end of screen
     
 }
 void Game::updateEnemies()
@@ -105,7 +133,7 @@ void Game::updateEnemies()
         Updates enemy spawn timer and spawns enemies when the total
         amount of enemies is smaller than designated maximum.
         Moves the enemies downwards.
-        Removes the enemies at the edge of the screen // TODO
+        Removes the enemies at the edge of the screen
     */
 
     // update timer for enemy spawning
@@ -145,12 +173,22 @@ void Game::updateEnemies()
             {
                 if (this->enemies[i].getGlobalBounds().contains(this->mousePosView))
                 {
+                    // Gain points
+                    if(this->enemies[i].getFillColor() == sf::Color::Magenta)
+                        this->points += 10;
+                    else if(this->enemies[i].getFillColor() == sf::Color::Blue)
+                        this->points += 7;
+                    else if(this->enemies[i].getFillColor() == sf::Color::Cyan)
+                        this->points += 5;
+                    else if(this->enemies[i].getFillColor() == sf::Color::Red)
+                        this->points += 3;
+                    else
+                        this->points += 1;
+
                     // Delete the enemy
                     deleted = true;
                     this->enemies.erase(this->enemies.begin() + i);
 
-                    // Gain points
-                    this->points += 1;
                 }
             }
         }
