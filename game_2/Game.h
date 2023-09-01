@@ -1,13 +1,10 @@
 #pragma once
 
+#include <iostream>
 // for rand init
 #include <ctime>
-// precompile headers
-#include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
-#include <SFML/Window.hpp>
-#include <SFML/Audio.hpp>
-#include <SFML/Network.hpp>
+
+#include "Player.h"
 
 /*
     Class for game engine wrapper class
@@ -19,6 +16,8 @@ private:
     sf::RenderWindow* window;
     bool endGame;
     sf::Event sfmlEvent;
+
+    Player player;
 
     // initializers
     void initVariables();
