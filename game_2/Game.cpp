@@ -2,7 +2,7 @@
 
 void Game::initVariables()
 {
- this->endGame = false;
+    this->endGame = false;
 }
 void Game::initWindow()
 {
@@ -19,5 +19,43 @@ Game::Game()
 
 Game::~Game()
 {
+    delete this->window;
+}
 
+// accessors
+const bool Game::running() const
+{
+    return this->window->isOpen();
+}
+// modifiers
+
+// functions
+void Game::pollEvents()
+{
+    while(this->window->pollEvent(this->sfmlEvent))
+    {
+        switch (this->sfmlEvent.type)
+        {
+        case sf::Event::Closed:
+            this->window->close();
+            break;
+        case sf::Event::KeyPressed:
+            if (this->sfmlEvent.key.code == sf::Keyboard::Escape)
+                this->window->close();
+            break;
+        }
+    }
+}
+void Game::update()
+{
+    this->pollEvents();
+}
+void Game::render()
+{
+    // clear
+    this->window->clear();
+    // render
+    
+    // display
+    this->window->display();
 }

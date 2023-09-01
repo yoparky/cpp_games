@@ -18,6 +18,7 @@ private:
     sf::VideoMode videoMode;
     sf::RenderWindow* window;
     bool endGame;
+    sf::Event sfmlEvent;
 
     // initializers
     void initVariables();
@@ -27,10 +28,12 @@ public:
     ~Game();
 
     // accessors
+    const bool running() const;
 
     // modifiers
 
     // functions
+    void pollEvents();
     void update();
     void render();
 };
